@@ -8,6 +8,7 @@ A collection of interactive minigames for QBX and QBCore servers, providing a va
 - **Difficulty Levels**: Each game has easy, medium, and hard modes
 - **Framework Support**: Works with both QBX and QBCore
 - **Modern UI**: Built with React and TypeScript for a polished experience
+- **Browser Testing**: Test minigames directly in your browser without needing FiveM
 
 ## Games Included
 
@@ -19,71 +20,61 @@ A collection of interactive minigames for QBX and QBCore servers, providing a va
 
 ## Installation
 
-1. Download or clone this repository
-2. Place the `vein-minigames` folder in your server's resources directory
-3. Add `ensure vein-minigames` to your server.cfg
+1. Download or clone this repository into your server's resources folder
+2. Add `ensure vein-minigames` to your server.cfg
+3. (Optional) Install npm dependencies and build the UI:
+   ```
+   cd vein-minigames/web
+   npm install
+   npm run build
+   ```
+   Note: A placeholder UI is included, so the npm build step is optional
 
-## Usage
+## Usage in Scripts
 
-### Exports
-
-The resource provides the following exports:
+You can use the minigames in any resource:
 
 ```lua
--- Start a minigame and return whether it was successfully started
--- game: 'memoryTiles', 'voltLab', 'fingerprint', 'thermite', 'maze'
--- difficulty: 'easy', 'medium', 'hard'
-exports['vein-minigames']:StartMinigame(game, difficulty)
+-- Start a minigame
+exports['vein-minigames']:StartMinigame('memoryTiles', 'medium')
 
--- Check if a minigame is currently active
+-- Check if a minigame is playing
 exports['vein-minigames']:IsMinigamePlaying()
 
--- Get the result of the last played minigame (nil if no game played yet)
-exports['vein-minigames']:GetMinigameResult()
+-- Get the result of the last minigame
+local result = exports['vein-minigames']:GetMinigameResult()
 ```
 
-### Example Usage
+For more detailed usage examples and patterns, see the `INTEGRATION.md` file.
 
-```lua
--- Start a memory tiles game on easy difficulty
-RegisterCommand('test_memory', function()
-    local success = exports['vein-minigames']:StartMinigame('memoryTiles', 'easy')
-    if success then
-        -- Wait for game to complete
-        CreateThread(function()
-            while exports['vein-minigames']:IsMinigamePlaying() do
-                Wait(100)
-            end
-            
-            -- Get the result
-            local result = exports['vein-minigames']:GetMinigameResult()
-            if result then
-                print('Player completed the memory game!')
-            else
-                print('Player failed the memory game!')
-            end
-        end)
-    end
-end)
-```
+## Browser Testing
 
-## Building the UI
+You can test all minigames directly in your browser without needing to run them in-game:
 
-If you need to modify the UI:
+1. Navigate to the web directory:
+   ```
+   cd vein-minigames/web
+   ```
 
-1. Navigate to the `vein-minigames/web` directory
-2. Run `npm install` to install dependencies
-3. Make your changes
-4. Run `npm run build` to build the production version
+2. Install dependencies:
+   ```
+   npm install
+   ```
 
-## Configuration
+3. Start the development server:
+   ```
+   npm start
+   ```
 
-Edit the `config.lua` file to customize game settings, difficulty levels, and more.
+4. Your browser should open to: `http://localhost:3000?test=true`
 
-## Credits
-
-Inspired by minigames from NoPixel 4.0 and Prodigy RP servers.
+For more detailed instructions, see the `BROWSER_TESTING.md` file.
 
 ## License
 
-MIT License 
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Credits
+
+- UI components built with React and Chakra UI
+- Game mechanics inspired by popular server minigames 
