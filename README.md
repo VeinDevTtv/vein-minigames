@@ -17,6 +17,10 @@ A collection of interactive minigames for QBX and QBCore servers, providing a va
 3. **Fingerprint** (Medium): Match fingerprint patterns within a time limit
 4. **Thermite** (Hard): Memorize and reproduce complex grid patterns quickly
 5. **Maze** (Hard): Navigate through a maze while avoiding traps
+6. **Wire Connection** (Medium): Connect matching colored wires correctly
+7. **Pattern Match** (Medium): Rotate pattern pieces to match the correct orientation
+8. **Simon Says** (Easy-Hard): Watch and repeat color sequences with increasing difficulty
+9. **Code Breaker** (Hard): Deduce a secret color code through logical deduction
 
 ## Installation
 
@@ -46,6 +50,32 @@ local result = exports['vein-minigames']:GetMinigameResult()
 ```
 
 For more detailed usage examples and patterns, see the `INTEGRATION.md` file.
+
+## Player Commands
+
+Players can directly play minigames using the following command:
+
+```
+/playminigame [game] [difficulty]
+```
+
+Available games:
+- `memoryTiles` - Memory pattern matching (Easy)
+- `voltLab` - Electrical sequence game (Medium)
+- `fingerprint` - Fingerprint matching (Medium)
+- `thermite` - Grid pattern memory game (Hard)
+- `maze` - Maze navigation (Hard)
+- `wireConnection` - Wire connection puzzle (Medium)
+- `patternMatch` - Pattern orientation puzzle (Medium)
+- `simonSays` - Color sequence memory game (Easy-Hard)
+- `codeBreaker` - Color code deduction game (Hard)
+
+Difficulty levels:
+- `easy` - For beginners (default)
+- `medium` - For intermediate players
+- `hard` - For expert players
+
+Players receive rewards when successfully completing minigames, including cash and items based on the difficulty level.
 
 ## Browser Testing
 

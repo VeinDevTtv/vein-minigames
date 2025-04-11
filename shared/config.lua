@@ -116,5 +116,93 @@ Config.Games = {
                 traps = 8
             }
         }
+    },
+    
+    -- Wire Connection Game (Medium)
+    wireConnection = {
+        enabled = true,
+        difficulty = {
+            easy = {
+                wireCount = 4,
+                timeLimit = 40,
+                shuffleCount = 5
+            },
+            medium = {
+                wireCount = 6,
+                timeLimit = 30,
+                shuffleCount = 10
+            },
+            hard = {
+                wireCount = 8,
+                timeLimit = 25,
+                shuffleCount = 15
+            }
+        }
+    },
+    
+    -- Pattern Match Game (Medium)
+    patternMatch = {
+        enabled = true,
+        difficulty = {
+            easy = {
+                gridSize = 3,
+                timeLimit = 60,
+                patternsToMatch = 5
+            },
+            medium = {
+                gridSize = 4,
+                timeLimit = 50,
+                patternsToMatch = 8
+            },
+            hard = {
+                gridSize = 5,
+                timeLimit = 40,
+                patternsToMatch = 12
+            }
+        }
+    },
+    
+    -- Simon Says Game (Easy-Hard)
+    simonSays = {
+        enabled = true,
+        difficulty = {
+            easy = {
+                sequenceLength = 5,
+                speedFactor = 1,
+                maxAttempts = 3
+            },
+            medium = {
+                sequenceLength = 8,
+                speedFactor = 2,
+                maxAttempts = 2
+            },
+            hard = {
+                sequenceLength = 12,
+                speedFactor = 3,
+                maxAttempts = 1
+            }
+        }
+    },
+    
+    -- Code Breaker Game (Hard)
+    codeBreaker = {
+        enabled = true,
+        difficulty = {
+            easy = {
+                codeLength = 3,
+                maxAttempts = 10,
+                timeLimit = 120
+            },
+            medium = {
+                codeLength = 4,
+                maxAttempts = 8,
+                timeLimit = 90
+            },
+            hard = {
+                codeLength = 5,
+                maxAttempts = 6,
+                timeLimit = 60
+            }
+        }
     }
 } 

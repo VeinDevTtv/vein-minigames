@@ -94,10 +94,17 @@ function GetMinigameResult()
     return gameResult
 end
 
+-- Function to register a callback for when a game is completed
+function RegisterMinigameCallback(cb)
+    AddEventHandler('vein-minigames:client:gameFinished', cb)
+    return true
+end
+
 -- Exports
 exports('StartMinigame', StartMinigame)
 exports('IsMinigamePlaying', IsMinigamePlaying)
 exports('GetMinigameResult', GetMinigameResult)
+exports('RegisterMinigameCallback', RegisterMinigameCallback)
 
 -- Debug Commands
 if Config.Debug then
@@ -124,5 +131,26 @@ if Config.Debug then
     RegisterCommand('vein_test_maze', function(source, args)
         local difficulty = args[1] or 'easy'
         StartMinigame('maze', difficulty)
+    end, false)
+    
+    -- New minigame debug commands
+    RegisterCommand('vein_test_wire', function(source, args)
+        local difficulty = args[1] or 'easy'
+        StartMinigame('wireConnection', difficulty)
+    end, false)
+    
+    RegisterCommand('vein_test_pattern', function(source, args)
+        local difficulty = args[1] or 'easy'
+        StartMinigame('patternMatch', difficulty)
+    end, false)
+    
+    RegisterCommand('vein_test_simon', function(source, args)
+        local difficulty = args[1] or 'easy'
+        StartMinigame('simonSays', difficulty)
+    end, false)
+    
+    RegisterCommand('vein_test_code', function(source, args)
+        local difficulty = args[1] or 'easy'
+        StartMinigame('codeBreaker', difficulty)
     end, false)
 end 

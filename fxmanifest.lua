@@ -13,12 +13,14 @@ shared_scripts {
 
 client_scripts {
     'client/main.lua',
+    'client/commands.lua',
     'client/games/*.lua',
     'client/framework/*.lua'
 }
 
 server_scripts {
     'server/main.lua',
+    'server/rewards.lua',
     'server/framework/*.lua'
 }
 

@@ -23,6 +23,10 @@ local result = exports['vein-minigames']:GetMinigameResult()
 - `'fingerprint'` - Fingerprint Analysis game (medium)
 - `'thermite'` - Thermite game (harder)
 - `'maze'` - Maze Navigation game (harder)
+- `'wireConnection'` - Wire Connection game (medium)
+- `'patternMatch'` - Pattern Matching game (medium)
+- `'simonSays'` - Simon Says game (variable difficulty)
+- `'codeBreaker'` - Code Breaker game (harder)
 
 ### Difficulty Levels
 - `'easy'`

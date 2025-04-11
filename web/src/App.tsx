@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Flex, Button, Select, Text, ChakraProvider, extendTheme } from '@chakra-ui/react';
+import { Box, Flex, Button, Select, Text, ChakraProvider, extendTheme, Heading } from '@chakra-ui/react';
 import MemoryTiles from './games/MemoryTiles';
 import VoltLab from './games/VoltLab';
 import Fingerprint from './games/Fingerprint';
 import Thermite from './games/Thermite';
 import Maze from './games/Maze';
+import WireConnection from './games/WireConnection';
+import PatternMatch from './games/PatternMatch';
+import SimonSays from './games/SimonSays';
+import CodeBreaker from './games/CodeBreaker';
 import { NuiProvider } from './providers/NuiProvider';
 
 // Define game types
-export type GameType = 'memoryTiles' | 'voltLab' | 'fingerprint' | 'thermite' | 'maze';
+export type GameType = 'memoryTiles' | 'voltLab' | 'fingerprint' | 'thermite' | 'maze' | 'wireConnection' | 'patternMatch' | 'simonSays' | 'codeBreaker';
 export type DifficultyType = 'easy' | 'medium' | 'hard';
 
 interface GameConfig {
@@ -135,6 +139,75 @@ const gameConfigs = {
       size: 19,
       timeLimit: 20,
       traps: 7,
+    },
+  },
+  // New minigame configurations
+  wireConnection: {
+    easy: {
+      wireCount: 4,
+      timeLimit: 40,
+      shuffleCount: 5,
+    },
+    medium: {
+      wireCount: 6,
+      timeLimit: 30,
+      shuffleCount: 10,
+    },
+    hard: {
+      wireCount: 8,
+      timeLimit: 25,
+      shuffleCount: 15,
+    },
+  },
+  patternMatch: {
+    easy: {
+      gridSize: 3,
+      timeLimit: 60,
+      patternsToMatch: 5,
+    },
+    medium: {
+      gridSize: 4,
+      timeLimit: 50,
+      patternsToMatch: 8,
+    },
+    hard: {
+      gridSize: 5,
+      timeLimit: 40,
+      patternsToMatch: 12,
+    },
+  },
+  simonSays: {
+    easy: {
+      sequenceLength: 5,
+      speedFactor: 1,
+      maxAttempts: 3,
+    },
+    medium: {
+      sequenceLength: 8,
+      speedFactor: 2,
+      maxAttempts: 2,
+    },
+    hard: {
+      sequenceLength: 12,
+      speedFactor: 3,
+      maxAttempts: 1,
+    },
+  },
+  codeBreaker: {
+    easy: {
+      codeLength: 3,
+      maxAttempts: 10,
+      timeLimit: 120,
+    },
+    medium: {
+      codeLength: 4,
+      maxAttempts: 8,
+      timeLimit: 90,
+    },
+    hard: {
+      codeLength: 5,
+      maxAttempts: 6,
+      timeLimit: 60,
     },
   },
 };
@@ -278,84 +351,128 @@ function App() {
             onClose={handleClose}
           />
         );
+      // New minigames
+      case 'wireConnection':
+        return (
+          <WireConnection 
+            config={gameConfig.config} 
+            difficulty={gameConfig.difficulty} 
+            onComplete={handleGameComplete}
+            onClose={handleClose}
+          />
+        );
+      case 'patternMatch':
+        return (
+          <PatternMatch 
+            config={gameConfig.config} 
+            difficulty={gameConfig.difficulty} 
+            onComplete={handleGameComplete}
+            onClose={handleClose}
+          />
+        );
+      case 'simonSays':
+        return (
+          <SimonSays 
+            config={gameConfig.config} 
+            difficulty={gameConfig.difficulty} 
+            onComplete={handleGameComplete}
+            onClose={handleClose}
+          />
+        );
+      case 'codeBreaker':
+        return (
+          <CodeBreaker 
+            config={gameConfig.config} 
+            difficulty={gameConfig.difficulty} 
+            onComplete={handleGameComplete}
+            onClose={handleClose}
+          />
+        );
       default:
-        return null;
+        return <Text>Invalid game type</Text>;
     }
   };
   
   return (
     <ChakraProvider theme={theme}>
       <NuiProvider>
-        {testMode && !visible && (
-          <Box p={5} maxW="500px" margin="0 auto" mt={10} bg="gray.800" borderRadius="md">
-            <Text fontSize="2xl" mb={4}>Vein Minigames Test Mode</Text>
-            <Flex direction="column" gap={3}>
-              <Select 
-                value={selectedGame} 
-                onChange={(e) => setSelectedGame(e.target.value as GameType)}
-                bg="gray.700"
-              >
-                <option value="memoryTiles">Memory Tiles</option>
-                <option value="voltLab">VoltLab Circuit</option>
-                <option value="fingerprint">Fingerprint Analysis</option>
-                <option value="thermite">Thermite</option>
-                <option value="maze">Maze Navigation</option>
-              </Select>
-              
-              <Select 
-                value={selectedDifficulty} 
-                onChange={(e) => setSelectedDifficulty(e.target.value as DifficultyType)}
-                bg="gray.700"
-              >
-                <option value="easy">Easy</option>
-                <option value="medium">Medium</option>
-                <option value="hard">Hard</option>
-              </Select>
-              
-              <Button colorScheme="blue" onClick={handleTestGame}>
-                Start Game
-              </Button>
+        <Box id="root" h="100vh" w="100vw" p={0} m={0} bg="gray.900" color="white">
+          {testMode && !visible && (
+            <Box p={6}>
+              <Heading as="h1" size="xl" mb={4}>Vein Minigames Test Mode</Heading>
+              <Flex direction="row" mb={4} align="center">
+                <Text mr={2}>Game:</Text>
+                <Select
+                  value={selectedGame}
+                  onChange={(e) => setSelectedGame(e.target.value as GameType)}
+                  width="200px"
+                  mr={4}
+                >
+                  <option value="memoryTiles">Memory Tiles</option>
+                  <option value="voltLab">Volt Lab</option>
+                  <option value="fingerprint">Fingerprint</option>
+                  <option value="thermite">Thermite</option>
+                  <option value="maze">Maze</option>
+                  <option value="wireConnection">Wire Connection</option>
+                  <option value="patternMatch">Pattern Match</option>
+                  <option value="simonSays">Simon Says</option>
+                  <option value="codeBreaker">Code Breaker</option>
+                </Select>
+                
+                <Text mr={2}>Difficulty:</Text>
+                <Select
+                  value={selectedDifficulty}
+                  onChange={(e) => setSelectedDifficulty(e.target.value as DifficultyType)}
+                  width="200px"
+                  mr={4}
+                >
+                  <option value="easy">Easy</option>
+                  <option value="medium">Medium</option>
+                  <option value="hard">Hard</option>
+                </Select>
+                
+                <Button colorScheme="blue" onClick={handleTestGame}>
+                  Test Game
+                </Button>
+              </Flex>
               
               {lastResult && (
-                <Text 
-                  mt={2} 
-                  fontWeight="bold" 
-                  color={lastResult === 'SUCCESS!' ? 'green.400' : 'red.400'}
-                >
-                  Last Result: {lastResult}
+                <Text fontSize="xl" mt={4}>
+                  Last test result: <strong>{lastResult}</strong>
                 </Text>
               )}
-            </Flex>
-          </Box>
-        )}
-        
-        {visible && (
-          <Box
-            position="absolute"
-            top="0"
-            left="0"
-            w="100vw"
-            h="100vh"
-            bg="rgba(0, 0, 0, 0.8)"
-            zIndex="999"
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-          >
-            <Box
-              w="90%"
-              h="90%"
-              maxW="1200px"
-              maxH="800px"
-              borderRadius="md"
-              overflow="hidden"
-              bg="gray.800"
-              boxShadow="xl"
-            >
-              {renderGame()}
             </Box>
-          </Box>
-        )}
+          )}
+          
+          {visible && (
+            <Box 
+              position="absolute"
+              top="0"
+              left="0"
+              right="0"
+              bottom="0"
+              bg="rgba(0,0,0,0.7)"
+              backdropFilter="blur(5px)"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              zIndex="10"
+            >
+              <Box 
+                bg="gray.900" 
+                borderRadius="md" 
+                boxShadow="xl"
+                width="80vw"
+                maxWidth="800px"
+                height="80vh"
+                maxHeight="600px"
+                overflow="hidden"
+              >
+                {renderGame()}
+              </Box>
+            </Box>
+          )}
+        </Box>
       </NuiProvider>
     </ChakraProvider>
   );
