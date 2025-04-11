@@ -1,7 +1,7 @@
 fx_version 'cerulean'
 game 'gta5'
 
-author 'vein'
+author 'Your Name'
 description 'Vein Minigames - A collection of interactive minigames for QBX/QBCore'
 version '1.0.0'
 
