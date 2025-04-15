@@ -5,9 +5,46 @@ local QBCore = nil
 -- Initialize framework
 CreateThread(function()
     if Config.Framework == 'qbx' then
-        QBCore = exports['qbx_core']:GetCoreObject()
+        local success, result = pcall(function() 
+            return exports['qbx_core']:GetCoreObject() 
+        end)
+        
+        if success and result then
+            QBCore = result
+            print('^2[vein-minigames] QBX Core loaded in rewards module^0')
+        else
+            -- Try alternative methods
+            success, result = pcall(function() 
+                return exports['qbx_core']:GetSharedObject() 
+            end)
+            
+            if success and result then
+                QBCore = result
+                print('^2[vein-minigames] QBX Core loaded in rewards module via GetSharedObject^0')
+            else
+                -- Try QBCore as fallback
+                success, result = pcall(function() 
+                    return exports['qb-core']:GetCoreObject() 
+                end)
+                
+                if success and result then
+                    QBCore = result
+                    print('^2[vein-minigames] QBCore loaded in rewards module as fallback^0')
+                else
+                    print('^1[vein-minigames] Failed to load core in rewards module^0')
+                end
+            end
+        end
     elseif Config.Framework == 'qbcore' then
-        QBCore = exports['qb-core']:GetCoreObject()
+        local success, result = pcall(function() 
+            return exports['qb-core']:GetCoreObject() 
+        end)
+        
+        if success and result then
+            QBCore = result
+        else
+            print('^1[vein-minigames] Failed to load QBCore in rewards module^0')
+        end
     end
 end)
 
@@ -126,6 +163,11 @@ local Rewards = {
 RegisterServerEvent('vein-minigames:server:rewardPlayer')
 AddEventHandler('vein-minigames:server:rewardPlayer', function(game, difficulty)
     local src = source
+    if not QBCore then
+        print('^1[vein-minigames] Framework not initialized in rewards module. Cannot reward player.^0')
+        return
+    end
+    
     local Player = QBCore.Functions.GetPlayer(src)
     
     if not Player then return end

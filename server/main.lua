@@ -16,11 +16,52 @@ CreateThread(function()
         end
     end
     
-    -- Initialize framework
+    -- Initialize framework with error handling
     if Config.Framework == 'qbx' then
-        QBCore = exports['qbx_core']:GetCoreObject()
+        local success, result = pcall(function() 
+            return exports['qbx_core']:GetCoreObject() 
+        end)
+        
+        if success and result then
+            QBCore = result
+            print('^2[vein-minigames] QBX Core loaded via GetCoreObject^0')
+        else
+            -- Try alternative methods
+            success, result = pcall(function() 
+                return exports['qbx_core']:GetSharedObject() 
+            end)
+            
+            if success and result then
+                QBCore = result
+                print('^2[vein-minigames] QBX Core loaded via GetSharedObject^0')
+            else
+                print('^1[vein-minigames] Failed to load QBX Core. Retrying in 3 seconds...^0')
+                Wait(3000)
+                
+                -- One more attempt
+                success, result = pcall(function() 
+                    return exports['qbx_core']:GetCoreObject() 
+                end)
+                
+                if success and result then
+                    QBCore = result
+                    print('^2[vein-minigames] QBX Core loaded via GetCoreObject (retry)^0')
+                else
+                    print('^1[vein-minigames] Failed to load QBX Core after retries^0')
+                end
+            end
+        end
     elseif Config.Framework == 'qbcore' then
-        QBCore = exports['qb-core']:GetCoreObject()
+        local success, result = pcall(function() 
+            return exports['qb-core']:GetCoreObject() 
+        end)
+        
+        if success and result then
+            QBCore = result
+            print('^2[vein-minigames] QBCore loaded via GetCoreObject^0')
+        else
+            print('^1[vein-minigames] Failed to load QBCore^0')
+        end
     end
     
     print('^2[INFO] Vein Minigames initialized with framework: '..Config.Framework..'^0')
@@ -30,6 +71,11 @@ end)
 RegisterServerEvent('vein-minigames:server:trackUsage')
 AddEventHandler('vein-minigames:server:trackUsage', function(game, difficulty, success)
     local src = source
+    if not QBCore then
+        print('^1[vein-minigames] Framework not initialized. Cannot track usage.^0')
+        return
+    end
+    
     local Player = QBCore.Functions.GetPlayer(src)
     
     if Player then
@@ -44,16 +90,23 @@ AddEventHandler('vein-minigames:server:trackUsage', function(game, difficulty, s
 end)
 
 -- Callback for server-side minigame verification (for anti-cheat purposes)
-QBCore.Functions.CreateCallback('vein-minigames:server:verifyGameResult', function(source, cb, gameData)
-    -- This is a placeholder for a future anti-cheat implementation
-    -- You can implement server-side verification logic here
-    cb(true)
-end)
-
--- Debug commands
-if Config.Debug then
-    QBCore.Commands.Add('vein_debug', 'Toggle vein minigames debug mode', {}, false, function(source)
-        Config.Debug = not Config.Debug
-        TriggerClientEvent('QBCore:Notify', source, 'Vein Minigames Debug: ' .. (Config.Debug and 'Enabled' or 'Disabled'))
-    end, 'admin')
-end 
+CreateThread(function()
+    Wait(1000) -- Wait for QBCore to be available
+    if QBCore then
+        QBCore.Functions.CreateCallback('vein-minigames:server:verifyGameResult', function(source, cb, gameData)
+            -- This is a placeholder for a future anti-cheat implementation
+            -- You can implement server-side verification logic here
+            cb(true)
+        end)
+        
+        -- Debug commands
+        if Config.Debug then
+            QBCore.Commands.Add('vein_debug', 'Toggle vein minigames debug mode', {}, false, function(source)
+                Config.Debug = not Config.Debug
+                TriggerClientEvent('QBCore:Notify', source, 'Vein Minigames Debug: ' .. (Config.Debug and 'Enabled' or 'Disabled'))
+            end, 'admin')
+        end
+    else
+        print('^1[vein-minigames] QBCore not initialized. Callback and commands not registered.^0')
+    end
+end) 
