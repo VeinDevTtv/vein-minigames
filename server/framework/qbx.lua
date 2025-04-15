@@ -41,6 +41,39 @@ local function InitializeQBX()
     return false
 end
 
+-- Helper function to register items with ox_inventory
+local function RegisterItemWithOxInventory(item)
+    -- Check if ox_inventory is available
+    local success, _ = pcall(function()
+        return exports.ox_inventory
+    end)
+    
+    if success then
+        -- Use ox_inventory to register the item
+        local registered = exports.ox_inventory:RegisterItem({
+            name = item.name,
+            label = item.label,
+            weight = item.weight,
+            stack = true,
+            close = item.shouldClose,
+            description = item.description,
+        })
+        
+        if registered then
+            print('^2[vein-minigames] Registered item ' .. item.name .. ' with ox_inventory^0')
+        else
+            print('^1[vein-minigames] Failed to register item ' .. item.name .. ' with ox_inventory^0')
+        end
+        
+        return registered
+    else
+        -- Fall back to QBX AddItem if ox_inventory is not available
+        print('^3[vein-minigames] ox_inventory not found, using QBX.Functions.AddItem^0')
+        QBX.Functions.AddItem(item.name, item)
+        return true
+    end
+end
+
 -- Initialize QBX Core
 CreateThread(function()
     if not InitializeQBX() then
@@ -52,7 +85,7 @@ CreateThread(function()
     -- Register items with the framework
     if QBX then
         -- Memory Tiles item
-        QBX.Functions.AddItem('memory_puzzle', {
+        RegisterItemWithOxInventory({
             name = 'memory_puzzle',
             label = 'Memory Puzzle Game',
             weight = 500,
@@ -66,7 +99,7 @@ CreateThread(function()
         })
         
         -- VoltLab item
-        QBX.Functions.AddItem('volt_kit', {
+        RegisterItemWithOxInventory({
             name = 'volt_kit',
             label = 'VoltLab Circuit Kit',
             weight = 1000,
@@ -80,7 +113,7 @@ CreateThread(function()
         })
         
         -- Fingerprint item
-        QBX.Functions.AddItem('fingerprint_kit', {
+        RegisterItemWithOxInventory({
             name = 'fingerprint_kit',
             label = 'Fingerprint Analysis Kit',
             weight = 800,
@@ -94,7 +127,7 @@ CreateThread(function()
         })
         
         -- Thermite item
-        QBX.Functions.AddItem('thermite', {
+        RegisterItemWithOxInventory({
             name = 'thermite',
             label = 'Thermite Charge',
             weight = 1000,
@@ -108,7 +141,7 @@ CreateThread(function()
         })
         
         -- Maze item
-        QBX.Functions.AddItem('maze_puzzle', {
+        RegisterItemWithOxInventory({
             name = 'maze_puzzle',
             label = 'Maze Puzzle',
             weight = 500,
@@ -134,11 +167,19 @@ AddEventHandler('vein-minigames:server:giveItem', function(item, amount)
         return
     end
     
-    local Player = QBX.Functions.GetPlayer(src)
+    -- Check if ox_inventory is available
+    local useOxInventory = pcall(function() return exports.ox_inventory end)
     
-    if Player and amount > 0 then
-        Player.Functions.AddItem(item, amount)
-        TriggerClientEvent('inventory:client:ItemBox', src, QBX.Shared.Items[item], 'add')
+    if useOxInventory then
+        -- Use ox_inventory to add item
+        exports.ox_inventory:AddItem(src, item, amount)
+    else
+        -- Fall back to QBX method
+        local Player = QBX.Functions.GetPlayer(src)
+        if Player and amount > 0 then
+            Player.Functions.AddItem(item, amount)
+            TriggerClientEvent('inventory:client:ItemBox', src, QBX.Shared.Items[item], 'add')
+        end
     end
 end)
 

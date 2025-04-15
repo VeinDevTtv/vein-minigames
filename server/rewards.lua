@@ -189,16 +189,29 @@ AddEventHandler('vein-minigames:server:rewardPlayer', function(game, difficulty)
     
     -- Give item rewards based on chance
     if reward.items then
+        -- Check if ox_inventory is available
+        local hasOxInventory = pcall(function() return exports.ox_inventory end)
+        
         for _, item in ipairs(reward.items) do
             local chance = math.random(1, 100)
             if chance <= item.chance then
-                -- Check if player has enough inventory space
-                local canCarry = Player.Functions.AddItem(item.name, item.amount)
-                if canCarry then
-                    TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[item.name], 'add')
-                    TriggerClientEvent('QBCore:Notify', src, 'You received ' .. item.amount .. 'x ' .. QBCore.Shared.Items[item.name].label, 'success')
+                if hasOxInventory then
+                    -- Use ox_inventory to add items
+                    local success = exports.ox_inventory:AddItem(src, item.name, item.amount)
+                    if success then
+                        TriggerClientEvent('QBCore:Notify', src, 'You received ' .. item.amount .. 'x ' .. item.name, 'success')
+                    else
+                        TriggerClientEvent('QBCore:Notify', src, 'Your inventory is full!', 'error')
+                    end
                 else
-                    TriggerClientEvent('QBCore:Notify', src, 'Your inventory is full!', 'error')
+                    -- Fall back to QBCore inventory
+                    local canCarry = Player.Functions.AddItem(item.name, item.amount)
+                    if canCarry then
+                        TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[item.name], 'add')
+                        TriggerClientEvent('QBCore:Notify', src, 'You received ' .. item.amount .. 'x ' .. QBCore.Shared.Items[item.name].label, 'success')
+                    else
+                        TriggerClientEvent('QBCore:Notify', src, 'Your inventory is full!', 'error')
+                    end
                 end
             end
         end
